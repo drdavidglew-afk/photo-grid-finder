@@ -3,6 +3,9 @@ name: Diagnose on emulator
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   emulator:
     runs-on: ubuntu-latest
@@ -33,3 +36,11 @@ jobs:
         with:
           name: diag
           path: diag-out
+      - name: Save results to diag-results branch
+        if: always()
+        run: |
+          cd diag-out
+          git init -q -b diag-results
+          git config user.name ci; git config user.email ci@example.com
+          git add -A && git commit -q -m "diag ${{ github.run_number }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" diag-results
