@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Photo Grid Finder</string>
+    <string name="intro">Reads the GPS position saved in a photo and shows it as latitude/longitude and a 10-figure OS grid reference.</string>
+    <string name="choose_photo">Choose photo</string>
+    <string name="share_tip">You can also share a photo to this app from your gallery or Files.</string>
+    <string name="reading">Reading photo…</string>
+    <string name="no_location">No Location</string>
+    <string name="label_grid">OS GRID REFERENCE (10-FIGURE)</string>
+    <string name="label_latlon">LATITUDE, LONGITUDE (WGS84)</string>
+    <string name="outside_grid">Outside GB National Grid</string>
+    <string name="open_maps">Open in Maps</string>
+    <string name="copy">Copy</string>
+</resources>

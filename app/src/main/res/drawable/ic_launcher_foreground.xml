@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- faint grid -->
+    <path android:strokeColor="#55FFFFFF" android:strokeWidth="1.5"
+        android:pathData="M30,34 L78,34 M30,54 L78,54 M30,74 L78,74 M34,30 L34,78 M54,30 L54,78 M74,30 L74,78" />
+    <!-- map pin -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M54,30 C44.6,30 37,37.6 37,47 C37,59.5 54,78 54,78 C54,78 71,59.5 71,47 C71,37.6 63.4,30 54,30 Z M54,53 C50.7,53 48,50.3 48,47 C48,43.7 50.7,41 54,41 C57.3,41 60,43.7 60,47 C60,50.3 57.3,53 54,53 Z" />
+</vector>
