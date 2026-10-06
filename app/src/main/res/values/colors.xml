@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#EEF2EE</color>
-    <color name="paper">#FBFCFA</color>
-    <color name="ink">#18231D</color>
-    <color name="muted">#5A6A60</color>
-    <color name="line">#CDD8CF</color>
-    <color name="grid">#2F6B4F</color>
-    <color name="grid_soft">#DCEBE2</color>
-    <color name="warn">#A2481F</color>
-    <color name="warn_soft">#F6E3D8</color>
+    <color name="bg">#EEF1EC</color>
+    <color name="paper">#FFFFFF</color>
+    <color name="ink">#142019</color>
+    <color name="muted">#5E6C63</color>
+    <color name="line">#DDE4DE</color>
+    <color name="accent">#1F5A41</color>
+    <color name="accent_soft">#E3EEE7</color>
+    <color name="on_accent">#FFFFFF</color>
+    <color name="gold">#C98A1B</color>
+    <color name="warn">#B04A20</color>
+    <color name="warn_soft">#FBE9E0</color>
+    <color name="header_top">#163C2C</color>
+    <color name="header_bottom">#2A6E50</color>
+    <color name="brand">#1F5A41</color>
 </resources>

@@ -8,196 +8,372 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@color/ink"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <TextView
+        <!-- Header -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/intro"
-            android:textColor="@color/muted"
-            android:textSize="15sp" />
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/pick"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/btn_primary"
-            android:text="@string/choose_photo"
-            android:textAllCaps="false"
-            android:textColor="@color/paper"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/share_tip"
-            android:textColor="@color/muted"
-            android:textSize="13sp" />
-
-        <LinearLayout
-            android:id="@+id/card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/card"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:visibility="gone">
-
-            <LinearLayout
+            <com.photogridfinder.app.GridHeaderView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_height="match_parent" />
 
-                <ImageView
-                    android:id="@+id/thumb"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:background="@color/grid_soft"
-                    android:contentDescription="@null"
-                    android:scaleType="centerCrop" />
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_weight="1"
-                    android:textColor="@color/ink"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- No location -->
             <LinearLayout
-                android:id="@+id/no_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/warn_box"
-                    android:fontFamily="monospace"
-                    android:padding="12dp"
-                    android:text="@string/no_location"
-                    android:textColor="@color/warn"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/reason"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/muted"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <!-- Location found -->
-            <LinearLayout
-                android:id="@+id/found"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:paddingStart="24dp"
+                android:paddingTop="32dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="64dp">
 
                 <TextView
-                    style="@style/Label"
-                    android:text="@string/label_grid" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/grid"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="monospace"
-                        android:textColor="@color/grid"
-                        android:textIsSelectable="true"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
-
-                    <Button
-                        android:id="@+id/copy_grid"
-                        style="@style/CopyButton" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/en"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:textColor="@color/muted"
-                    android:textSize="13sp" />
-
-                <TextView
-                    style="@style/Label"
-                    android:text="@string/label_latlon" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/latlon"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:fontFamily="monospace"
-                        android:textColor="@color/ink"
-                        android:textIsSelectable="true"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/copy_latlon"
-                        style="@style/CopyButton" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/dms"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="monospace"
-                    android:textColor="@color/muted"
-                    android:textSize="13sp" />
-
-                <Button
-                    android:id="@+id/open_maps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/btn_soft"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/open_maps"
-                    android:textAllCaps="false"
-                    android:textColor="@color/grid"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0.14"
+                    android:text="@string/eyebrow"
+                    android:textColor="#F2C46B"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:text="@string/app_name"
+                    android:textColor="#FFFFFF"
+                    android:textSize="34sp"
                     android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/intro"
+                    android:textColor="#CFE3D8"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Content, overlapping the header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-40dp"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingBottom="32dp">
+
+            <!-- Picker card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:id="@+id/pick"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/btn_primary"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="10dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_photo" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="@string/choose_photo"
+                        android:textColor="@color/on_accent"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/share_tip"
+                    android:textColor="@color/muted"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Result card -->
+            <LinearLayout
+                android:id="@+id/card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/card"
+                android:elevation="3dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="210dp"
+                    android:background="@color/accent_soft"
+                    android:contentDescription="@null"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="middle"
+                        android:fontFamily="sans-serif-medium"
+                        android:singleLine="true"
+                        android:textColor="@color/ink"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/meta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/muted"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+
+                    <!-- No location -->
+                    <LinearLayout
+                        android:id="@+id/no_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/warn_box"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:layout_marginEnd="8dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_pin" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-condensed"
+                                android:text="@string/no_location"
+                                android:textColor="@color/warn"
+                                android:textSize="26sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/reason"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:lineSpacingMultiplier="1.15"
+                            android:textColor="@color/ink"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Location found -->
+                    <LinearLayout
+                        android:id="@+id/found"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <TextView
+                            style="@style/Label"
+                            android:text="@string/label_grid" />
+
+                        <LinearLayout
+                            android:id="@+id/grid_row"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/grid_sq"
+                                    style="@style/GridNumber"
+                                    android:fontFamily="sans-serif-condensed"
+                                    android:textColor="@color/accent"
+                                    android:textSize="30sp" />
+
+                                <TextView
+                                    style="@style/Caption"
+                                    android:text="@string/cap_square" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="14dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/grid_e"
+                                    style="@style/GridNumber" />
+
+                                <TextView
+                                    style="@style/Caption"
+                                    android:text="@string/cap_easting" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/grid_n"
+                                    style="@style/GridNumber" />
+
+                                <TextView
+                                    style="@style/Caption"
+                                    android:text="@string/cap_northing" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/outside"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="@string/outside_grid"
+                            android:textColor="@color/ink"
+                            android:textSize="18sp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/en"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/muted"
+                            android:textSize="12sp" />
+
+                        <LinearLayout
+                            android:id="@+id/copy_grid"
+                            style="@style/ActionSoft"
+                            android:layout_width="match_parent"
+                            android:layout_marginTop="14dp">
+
+                            <ImageView
+                                style="@style/ActionIcon"
+                                android:src="@drawable/ic_copy" />
+
+                            <TextView
+                                style="@style/ActionText"
+                                android:text="@string/copy_grid" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="18dp"
+                            android:background="@color/line" />
+
+                        <TextView
+                            style="@style/Label"
+                            android:text="@string/label_latlon" />
+
+                        <TextView
+                            android:id="@+id/latlon"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/ink"
+                            android:textIsSelectable="true"
+                            android:textSize="19sp" />
+
+                        <TextView
+                            android:id="@+id/dms"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="monospace"
+                            android:textColor="@color/muted"
+                            android:textSize="12sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:id="@+id/copy_latlon"
+                                style="@style/ActionSoft"
+                                android:layout_width="0dp"
+                                android:layout_weight="1">
+
+                                <ImageView
+                                    style="@style/ActionIcon"
+                                    android:src="@drawable/ic_copy" />
+
+                                <TextView
+                                    style="@style/ActionText"
+                                    android:text="@string/copy" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/open_maps"
+                                style="@style/ActionSoft"
+                                android:layout_width="0dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/btn_outline">
+
+                                <ImageView
+                                    style="@style/ActionIcon"
+                                    android:src="@drawable/ic_map" />
+
+                                <TextView
+                                    style="@style/ActionText"
+                                    android:text="@string/open_maps" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

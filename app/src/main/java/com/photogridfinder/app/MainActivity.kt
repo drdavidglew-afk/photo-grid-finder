@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -21,6 +22,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.exifinterface.media.ExifInterface
+import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -35,23 +37,30 @@ class MainActivity : Activity() {
         val lat: Double?,
         val lon: Double?,
         val reason: String,
+        val taken: String?,
+        val altitude: Double?,
     )
 
     private val executor = Executors.newSingleThreadExecutor()
     private var pendingAction: (() -> Unit)? = null
 
     private lateinit var card: View
-    private lateinit var thumbView: ImageView
+    private lateinit var photoView: ImageView
     private lateinit var nameView: TextView
+    private lateinit var metaView: TextView
     private lateinit var noLocation: View
     private lateinit var reasonView: TextView
     private lateinit var found: View
+    private lateinit var gridRow: View
+    private lateinit var gridSq: TextView
+    private lateinit var gridE: TextView
+    private lateinit var gridN: TextView
+    private lateinit var outsideView: TextView
     private lateinit var latLonView: TextView
     private lateinit var dmsView: TextView
-    private lateinit var gridView: TextView
     private lateinit var enView: TextView
-    private lateinit var mapsButton: Button
-    private lateinit var copyGridButton: Button
+    private lateinit var copyGrid: View
+    private var gridText = ""
 
     private var lastLat = 0.0
     private var lastLon = 0.0
@@ -61,22 +70,27 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
 
         card = findViewById(R.id.card)
-        thumbView = findViewById(R.id.thumb)
+        card.clipToOutline = true
+        photoView = findViewById(R.id.photo)
         nameView = findViewById(R.id.name)
+        metaView = findViewById(R.id.meta)
         noLocation = findViewById(R.id.no_location)
         reasonView = findViewById(R.id.reason)
         found = findViewById(R.id.found)
+        gridRow = findViewById(R.id.grid_row)
+        gridSq = findViewById(R.id.grid_sq)
+        gridE = findViewById(R.id.grid_e)
+        gridN = findViewById(R.id.grid_n)
+        outsideView = findViewById(R.id.outside)
         latLonView = findViewById(R.id.latlon)
         dmsView = findViewById(R.id.dms)
-        gridView = findViewById(R.id.grid)
         enView = findViewById(R.id.en)
-        mapsButton = findViewById(R.id.open_maps)
-        copyGridButton = findViewById(R.id.copy_grid)
+        copyGrid = findViewById(R.id.copy_grid)
 
-        findViewById<Button>(R.id.pick).setOnClickListener { withPermissions { openPicker() } }
-        findViewById<Button>(R.id.copy_latlon).setOnClickListener { copy("Lat/long", latLonView.text) }
-        copyGridButton.setOnClickListener { copy("Grid reference", gridView.text) }
-        mapsButton.setOnClickListener { openMaps() }
+        findViewById<View>(R.id.pick).setOnClickListener { withPermissions { openPicker() } }
+        findViewById<View>(R.id.copy_latlon).setOnClickListener { copy("Lat/long", latLonView.text) }
+        copyGrid.setOnClickListener { copy("Grid reference", gridText) }
+        findViewById<View>(R.id.open_maps).setOnClickListener { openMaps() }
 
         handleShare(intent)
     }
@@ -163,9 +177,11 @@ class MainActivity : Activity() {
     private fun process(uri: Uri) {
         card.visibility = View.VISIBLE
         nameView.text = getString(R.string.reading)
+        metaView.visibility = View.GONE
         noLocation.visibility = View.GONE
         found.visibility = View.GONE
-        thumbView.setImageDrawable(null)
+        photoView.visibility = View.GONE
+        photoView.setImageDrawable(null)
         executor.execute {
             val result = readPhoto(uri)
             runOnUiThread { show(result) }
@@ -232,12 +248,16 @@ class MainActivity : Activity() {
 
     private fun readPhoto(uri: Uri): PhotoResult {
         val name = displayName(uri)
-        val thumb = loadThumb(uri)
+        var meta: ExifInterface? = null
         var sawExif = false
         var sawGpsTags = false
+        var lat: Double? = null
+        var lon: Double? = null
+        var altitude: Double? = null
 
         for (u in candidateUris(uri, name)) {
             val exif = readExif(u) ?: continue
+            if (meta == null) meta = exif
             if (exif.getAttribute(ExifInterface.TAG_MAKE) != null ||
                 exif.getAttribute(ExifInterface.TAG_MODEL) != null ||
                 exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL) != null
@@ -247,8 +267,26 @@ class MainActivity : Activity() {
             if (exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE) != null) sawGpsTags = true
             val ll = exif.latLong
             if (ll != null && !(ll[0] == 0.0 && ll[1] == 0.0)) {
-                return PhotoResult(name, thumb, ll[0], ll[1], "")
+                lat = ll[0]
+                lon = ll[1]
+                if (exif.getAttribute(ExifInterface.TAG_GPS_ALTITUDE) != null) {
+                    val alt = exif.getAltitude(Double.NaN)
+                    if (!alt.isNaN()) altitude = alt
+                }
+                meta = exif
+                break
             }
+        }
+
+        val taken = formatTaken(
+            meta?.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL)
+                ?: meta?.getAttribute(ExifInterface.TAG_DATETIME),
+        )
+        val rotation = meta?.rotationDegrees ?: 0
+        val thumb = loadThumb(uri, rotation)
+
+        if (lat != null && lon != null) {
+            return PhotoResult(name, thumb, lat, lon, "", taken, altitude)
         }
 
         val locationAllowed = Build.VERSION.SDK_INT < 29 ||
@@ -257,13 +295,23 @@ class MainActivity : Activity() {
             sawGpsTags && !locationAllowed ->
                 "The photo has a location, but this app isn't allowed to read it. Allow \"Photos and videos\" access for Photo Grid Finder in Settings, then try again."
             sawGpsTags ->
-                "The photo had a location, but it was blanked out before it reached this app. Try choosing it from \"Browse\" > your phone's storage > DCIM > Camera."
+                "The photo had a location, but it was blanked out before it reached this app. Try choosing it from Browse > your phone's storage > DCIM > Camera."
             sawExif ->
                 "Camera details are present but no GPS. Location tagging was probably off in the camera app."
             else ->
                 "No photo metadata at all. The photo was probably re-saved or shared through an app that strips it."
         }
-        return PhotoResult(name, thumb, null, null, reason)
+        return PhotoResult(name, thumb, null, null, reason, taken, null)
+    }
+
+    private fun formatTaken(raw: String?): String? {
+        if (raw.isNullOrBlank()) return null
+        return try {
+            val date = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.UK).parse(raw.trim()) ?: return null
+            SimpleDateFormat("d MMM yyyy, HH:mm", Locale.UK).format(date)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun displayName(uri: Uri): String = try {
@@ -274,13 +322,19 @@ class MainActivity : Activity() {
         ""
     }
 
-    private fun loadThumb(uri: Uri): Bitmap? = try {
+    private fun loadThumb(uri: Uri, rotation: Int): Bitmap? = try {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
         var sample = 1
-        while (bounds.outWidth / sample > 400 || bounds.outHeight / sample > 400) sample *= 2
+        while (bounds.outWidth / sample > 1400 || bounds.outHeight / sample > 1400) sample *= 2
         val opts = BitmapFactory.Options().apply { inSampleSize = sample }
-        contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) }
+        val bmp = contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, opts) }
+        if (bmp != null && rotation != 0) {
+            val m = Matrix().apply { postRotate(rotation.toFloat()) }
+            Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, m, true)
+        } else {
+            bmp
+        }
     } catch (e: Exception) {
         null
     }
@@ -289,33 +343,55 @@ class MainActivity : Activity() {
 
     private fun show(r: PhotoResult) {
         nameView.text = r.name.ifBlank { "Photo" }
-        if (r.thumb != null) thumbView.setImageBitmap(r.thumb)
+        if (r.thumb != null) {
+            photoView.setImageBitmap(r.thumb)
+            photoView.visibility = View.VISIBLE
+        }
+
+        val metaParts = mutableListOf<String>()
+        r.taken?.let { metaParts += it }
+        r.altitude?.let { metaParts += "${it.roundToLong()} m altitude" }
+        metaView.text = metaParts.joinToString("  ·  ")
+        metaView.visibility = if (metaParts.isEmpty()) View.GONE else View.VISIBLE
 
         if (r.lat == null || r.lon == null) {
             noLocation.visibility = View.VISIBLE
             found.visibility = View.GONE
             reasonView.text = r.reason
-            return
-        }
-
-        lastLat = r.lat
-        lastLon = r.lon
-        noLocation.visibility = View.GONE
-        found.visibility = View.VISIBLE
-        latLonView.text = String.format(Locale.UK, "%.6f, %.6f", r.lat, r.lon)
-        dmsView.text = "${dms(r.lat, 'N', 'S')}   ${dms(r.lon, 'E', 'W')}"
-
-        val pos = OsGrid.toEastingNorthing(r.lat, r.lon)
-        val ref = OsGrid.gridRef10(pos.easting, pos.northing)
-        if (ref != null) {
-            gridView.text = ref
-            enView.text = "Easting ${pos.easting.roundToLong()}  ·  Northing ${pos.northing.roundToLong()}"
-            copyGridButton.visibility = View.VISIBLE
         } else {
-            gridView.text = getString(R.string.outside_grid)
-            enView.text = ""
-            copyGridButton.visibility = View.GONE
+            lastLat = r.lat
+            lastLon = r.lon
+            noLocation.visibility = View.GONE
+            found.visibility = View.VISIBLE
+            latLonView.text = String.format(Locale.UK, "%.6f, %.6f", r.lat, r.lon)
+            dmsView.text = "${dms(r.lat, 'N', 'S')}   ${dms(r.lon, 'E', 'W')}"
+
+            val pos = OsGrid.toEastingNorthing(r.lat, r.lon)
+            val ref = OsGrid.gridRef10(pos.easting, pos.northing)
+            if (ref != null) {
+                val parts = ref.split(" ")
+                gridSq.text = parts[0]
+                gridE.text = parts[1]
+                gridN.text = parts[2]
+                gridText = ref
+                gridRow.visibility = View.VISIBLE
+                outsideView.visibility = View.GONE
+                copyGrid.visibility = View.VISIBLE
+                enView.text = "Full: E ${pos.easting.roundToLong()}  N ${pos.northing.roundToLong()}"
+                enView.visibility = View.VISIBLE
+            } else {
+                gridRow.visibility = View.GONE
+                outsideView.visibility = View.VISIBLE
+                copyGrid.visibility = View.GONE
+                enView.visibility = View.GONE
+            }
         }
+
+        // Gentle entrance
+        val d = resources.displayMetrics.density
+        card.alpha = 0f
+        card.translationY = 24 * d
+        card.animate().alpha(1f).translationY(0f).setDuration(260).start()
     }
 
     private fun dms(value: Double, pos: Char, neg: Char): String {
