@@ -1,0 +1,1 @@
+    topResumedActivity=ActivityRecord{69396e5 u0 com.photogridfinder.app/.MainActivity t8}
