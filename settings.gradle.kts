@@ -14,4 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "PhotoGridFinder"
 include(":app")
-include(":bookshelf")
